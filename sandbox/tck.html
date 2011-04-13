@@ -1,0 +1,242 @@
+<!--
+  gury - A jQuery inspired canvas utility library
+  Simple demo to show you how to use gury.
+  By Ryan Sandor Richards
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>gury demo - By Ryan Sandor Richards</title>
+    <style type="text/css" media="screen">
+      * {
+        margin:0;
+        padding:0;
+      }
+    </style>
+  </head>
+  <body style="font-family: helvetica; background-color: #444; color: #ddd; text-align: center">
+    
+  
+
+    <canvas  id="screen"></canvas>
+    
+    <script type="text/javascript" charset="utf-8" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script src="jquery.class.js" type="text/javascript" charset="utf-8"></script>
+    <script src="rsandor-gury-1ccaa3c/gury.min.js" type="text/javascript" charset="utf-8"></script>
+    
+
+    
+    <!-- Now script up a neato canvas scene! -->
+    <script type="text/javascript" charset="utf-8">
+      var works = [
+          { year : 2000, month : 2, day : 22 },
+          { year : 2001, month : 2, day : 22 },
+          { year : 2002, month : 2, day : 22 },
+          { year : 2003, month : 2, day : 22 },
+          { year : 2004, month : 2, day : 22 },
+          { year : 2004, month : 12, day : 22 },
+          { year : 2005, month : 2, day : 2 },
+          { year : 2002, month : 2, day : 12 },
+          { year : 2003, month : 2, day : 8 },
+          { year : 2004, month : 2, day : 14 },
+          { year : 2004, month : 12, day : 22 },
+          { year : 2005, month : 2, day : 22 },
+          { year : 2006, month : 2, day : 22 },
+          { year : 2007, month : 2, day : 22 },
+          { year : 2008, month : 2, day : 22 },
+          { year : 2008, month : 8, day : 22 },
+          { year : 2008, month : 2, day : 22 },
+          { year : 2008, month : 8, day : 22 },
+          { year : 2009, month : 2, day : 22 },
+          { year : 2009, month : 5, day : 22 },
+          { year : 2009, month : 10, day : 22 },
+          { year : 2010, month : 11, day : 22 },
+          { year : 2011, month : 0, day : 22 },
+          { year : 2011, month : 1, day : 22 },
+          { year : 2011, month : 2, day : 22 }
+          ];
+    
+    
+
+		
+	 	var Timeline = Class.extend({
+		  init: function(isDancing){
+		    this.dancing = isDancing;
+		  },
+		  dance: function(){
+		    return this.dancing;
+		  }
+		});
+		
+
+
+
+      var T = {
+        opts : {
+          ONE_DAY : 1000 * 60 * 60 * 24,
+          START_DATE : new Date(works[0].year, works[0].month, works[0].day),
+          TOTAL_RANGE : 0,
+          TOTAL_DAYS : 0,
+          RATIO : 0,
+          SLIDER : {
+              POSITION : $(window).width()-150,
+              MOUSE_INIT_X : 0,
+              ACTIVE : false,
+              WIDTH : 150
+          },
+          DOT_HTML : '<span style="position:absolute;"></span>',
+          $w : $(window),
+          $ww : $(window).width()-20
+        },
+        tags : {},
+        init : function(){
+          T.opts.TOTAL_RANGE = T.getDateRange('first', works[works.length-1]);
+          T.opts.TOTAL_DAYS = T.getDaysFromMs(T.opts.TOTAL_RANGE);
+          T.opts.RATIO = T.getRatio(T.opts.TOTAL_DAYS);
+        },
+        getDateRange : function(start, end){          
+          var dStart = (start == 'first') ? T.opts.START_DATE : new Date(start.year, start.month, start.day).getTime();
+          var dEnd = new Date(end.year, end.month, end.day).getTime();
+          return (dEnd - dStart);
+        },
+        getDaysFromMs : function(ms){
+          return Math.round(ms/T.opts.ONE_DAY);
+        },
+        getRatio : function(days){
+          return (T.opts.$ww-20) / days;
+        },
+        getWorkPosition : function(work){
+          var range = T.getDateRange('first', work),
+              days = T.getDaysFromMs(range);
+              
+          return days*T.opts.RATIO;
+        },
+        drawWorks : function(canvas){
+          for (var i=0; i < works.length; i++) {
+            var px = T.getWorkPosition(works[i]),
+                px_s = ''+px;
+            if (T.tags[px_s]) { px_s = px_s+'*'; }
+            T.tags[px_s] = px_s;
+            
+            canvas.add(px_s, {
+              x: px+10, s: 2,
+              draw: function(ctx) {
+                ctx.fillStyle = "#0ff";
+                ctx.fillRect(this.x, T.opts.$w.height()-50, this.s, this.s);
+              }
+            })
+            
+          };
+          
+          return canvas;
+        },
+        sliderInit : function(canvas){
+          
+          var unbindMouseMove = function(){
+            canvas.unbind('slider_handler', 'mousemove');
+            T.opts.SLIDER.ACTIVE = false;
+          }
+          
+          canvas.add('slider', {
+            draw: function(ctx) {
+              ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+              ctx.fillRect(T.opts.SLIDER.POSITION,  T.opts.$w.height()-65, T.opts.SLIDER.WIDTH, 30);
+            }
+          })
+          
+          .mousedown('slider', function(e) {
+              T.opts.SLIDER.ACTIVE = true;
+              T.opts.SLIDER.MOUSE_INIT_X = e.clientX;
+              
+              canvas.mousemove('slider_handler', function(e) {
+                  var diff = T.opts.SLIDER.MOUSE_INIT_X -e.clientX;
+                  
+                  T.opts.SLIDER.POSITION = T.opts.SLIDER.POSITION-diff
+                  T.opts.SLIDER.MOUSE_INIT_X = e.clientX;
+              })
+          })
+          
+          .mouseup('slider',unbindMouseMove)
+          
+          .mouseleave('slider', unbindMouseMove)
+          
+          .mouseup('slider_handler',function(e){
+            unbindMouseMove();
+            // T.opts.SLIDER.POSITION = e.clientX;
+            
+            T.opts.SLIDER.POSITION = e.clientX;
+
+          })
+          
+          .mouseleave('slider_handler',unbindMouseMove)
+          
+
+        }
+        
+        
+        
+        
+      }
+    
+    
+      T.init();
+      
+      $(function() {
+        var $w = $(window);
+        
+        window.g = $g('screen')
+          
+          .size(T.opts.$ww, $w.height())
+          
+          .background('black')
+          
+          .add('timeline', function(ctx) {
+            ctx.strokeStyle = '#FFF';
+            ctx.beginPath();
+            ctx.moveTo(0, $w.height()-100);
+            ctx.lineTo(T.opts.$ww, T.opts.$w.height()-100);
+            ctx.stroke();
+          })
+          
+          .add('slider_handler', {
+            draw : function(ctx) {
+              ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+              ctx.fillRect(0, $w.height()-85, T.opts.$ww, 70);
+            }
+          })
+          
+         
+                    
+                    
+          
+          T.drawWorks(g);
+          T.sliderInit(g);
+          
+          $w.resize(function(e){
+            g.size($w.width(), $w.height())
+          })
+          
+          // .add({
+          //             x: 20, y: 20, dx: 1, dy: 2, s: 10,
+          //             draw: function(ctx) {
+          //               ctx.fillStyle = "#0ff";
+          //               ctx.fillRect(this.x, this.y, this.s, this.s);
+          //             
+          //               this.x += this.dx;
+          //               if (this.x >= 246 || this.x <= 10) {
+          //                 this.dx *= -1;
+          //               }
+          //               this.y += this.dy;
+          //               if (this.y >= 246 || this.y <= 10) {
+          //                 this.dy *= -1;
+          //               }
+          //             }
+          //           })
+          
+          g.draw();
+          
+          g.play(20);
+      });      
+    </script>
+  </body>
+</html>
