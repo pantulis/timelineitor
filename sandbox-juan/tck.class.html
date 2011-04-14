@@ -1,0 +1,369 @@
+<!--
+  gury - A jQuery inspired canvas utility library
+  Simple demo to show you how to use gury.
+  By Ryan Sandor Richards
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>gury demo - By Ryan Sandor Richards</title>
+    <style type="text/css" media="screen">
+      * {
+        margin:0;
+        padding:0;
+      }
+      
+      body,
+      html {
+        overflow:hidden;
+      }
+    </style>
+  </head>
+  <body style="font-family: helvetica; background-color: #444; color: #ddd; text-align: center">
+    
+  
+
+    <canvas  id="screen"></canvas>
+    
+    <script type="text/javascript" charset="utf-8" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script src="jquery.class.js" type="text/javascript" charset="utf-8"></script>
+    <script src="rsandor-gury-1ccaa3c/gury.min.js" type="text/javascript" charset="utf-8"></script>
+    
+
+    
+    <!-- Now script up a neato canvas scene! -->
+    <script type="text/javascript" charset="utf-8">
+      var works = [
+          { year : 2000, month : 2, day : 22 },
+          { year : 2001, month : 2, day : 22 },
+          { year : 2002, month : 2, day : 22 },
+          { year : 2003, month : 2, day : 22 },
+          { year : 2004, month : 2, day : 22 },
+          { year : 2004, month : 12, day : 22 },
+          { year : 2005, month : 2, day : 2 },
+          { year : 2002, month : 2, day : 12 },
+          { year : 2003, month : 2, day : 8 },
+          { year : 2004, month : 2, day : 14 },
+          { year : 2004, month : 12, day : 22 },
+          { year : 2005, month : 2, day : 22 },
+          { year : 2006, month : 2, day : 22 },
+          { year : 2007, month : 2, day : 22 },
+          { year : 2008, month : 2, day : 22 },
+          { year : 2008, month : 8, day : 22 },
+          { year : 2008, month : 2, day : 22 },
+          { year : 2008, month : 8, day : 22 },
+          { year : 2009, month : 2, day : 22 },
+          { year : 2009, month : 5, day : 22 },
+          { year : 2009, month : 10, day : 22 },
+          { year : 2010, month : 11, day : 22 },
+          { year : 2011, month : 0, day : 22 },
+          { year : 2011, month : 1, day : 22 },
+          { year : 2011, month : 2, day : 22 }
+          ];
+    
+    
+
+		
+
+		
+
+
+
+      // var T = {
+      //    opts : {
+      //      ONE_DAY : 1000 * 60 * 60 * 24,
+      //      START_DATE : new Date(works[0].year, works[0].month, works[0].day),
+      //      TOTAL_RANGE : 0,
+      //      TOTAL_DAYS : 0,
+      //      RATIO : 0,
+      //      SLIDER : {
+      //          POSITION : $(window).width()-150,
+      //          MOUSE_INIT_X : 0,
+      //          ACTIVE : false,
+      //          WIDTH : 150
+      //      },
+      //      DOT_HTML : '<span style="position:absolute;"></span>',
+      //      $w : $(window),
+      //      $ww : $(window).width()-20
+      //    },
+      //    tags : {},
+      //    init : function(){
+      //      T.opts.TOTAL_RANGE = T._getDateRange('first', works[works.length-1]);
+      //      T.opts.TOTAL_DAYS = T._getDaysFromMs(T.opts.TOTAL_RANGE);
+      //      T.opts.RATIO = T._getRatio(T.opts.TOTAL_DAYS);
+      //    },
+      //    _getDateRange : function(start, end){          
+      //      var dStart = (start == 'first') ? T.opts.START_DATE : new Date(start.year, start.month, start.day).getTime();
+      //      var dEnd = new Date(end.year, end.month, end.day).getTime();
+      //      return (dEnd - dStart);
+      //    },
+      //    _getDaysFromMs : function(ms){
+      //      return Math.round(ms/T.opts.ONE_DAY);
+      //    },
+      //    _getRatio : function(days){
+      //      return (T.opts.$ww-20) / days;
+      //    },
+      //    _getWorkPosition : function(work){
+      //      var range = T._getDateRange('first', work),
+      //          days = T._getDaysFromMs(range);
+      //          
+      //      return days*T.opts.RATIO;
+      //    },
+      //    drawWorks : function(canvas){
+      //      for (var i=0; i < works.length; i++) {
+      //        var px = T._getWorkPosition(works[i]),
+      //            px_s = ''+px;
+      //        if (T.tags[px_s]) { px_s = px_s+'*'; }
+      //        T.tags[px_s] = px_s;
+      //        
+      //        canvas.add(px_s, {
+      //          x: px+10, s: 2,
+      //          draw: function(ctx) {
+      //            ctx.fillStyle = "#0ff";
+      //            ctx.fillRect(this.x, T.opts.$w.height()-50, this.s, this.s);
+      //          }
+      //        })
+      //        
+      //      };
+      //      
+      //      return canvas;
+      //    },
+      //    sliderInit : function(canvas){
+      //      
+      //      var unbindMouseMove = function(){
+      //        canvas.unbind('slider_handler', 'mousemove');
+      //        T.opts.SLIDER.ACTIVE = false;
+      //      }
+      //      
+      //      canvas.add('slider', {
+      //        draw: function(ctx) {
+      //          ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+      //          ctx.fillRect(T.opts.SLIDER.POSITION,  T.opts.$w.height()-65, T.opts.SLIDER.WIDTH, 30);
+      //        }
+      //      })
+      //      
+      //      .mousedown('slider', function(e) {
+      //          T.opts.SLIDER.ACTIVE = true;
+      //          T.opts.SLIDER.MOUSE_INIT_X = e.clientX;
+      //          
+      //          canvas.mousemove('slider_handler', function(e) {
+      //              var diff = T.opts.SLIDER.MOUSE_INIT_X -e.clientX;
+      //              
+      //              T.opts.SLIDER.POSITION = T.opts.SLIDER.POSITION-diff
+      //              T.opts.SLIDER.MOUSE_INIT_X = e.clientX;
+      //          })
+      //      })
+      //      
+      //      .mouseup('slider',unbindMouseMove)
+      //      
+      //      .mouseleave('slider', unbindMouseMove)
+      //      
+      //      .mouseup('slider_handler',function(e){
+      //        unbindMouseMove();
+      //        // T.opts.SLIDER.POSITION = e.clientX;
+      //        
+      //        T.opts.SLIDER.POSITION = e.clientX;
+      // 
+      //      })
+      //      
+      //      .mouseleave('slider_handler',unbindMouseMove)
+      //      
+      // 
+      //    }
+      //    
+      //    
+      //    
+      //    
+      //  }
+      //     
+      //     
+      //  T.init();
+	
+	 	var Canvas = Class.extend({
+		  g : null ,
+		  init: function(id){
+		    this.g = $g(id);
+			  this.g.background('black');
+			  this.setSize();
+			  this.g.draw();
+		  },
+		  setSize: function(){
+		    this.g.size($w.width(),$w.height());
+		  },
+		  draw : function(){
+			  this.g.draw();
+		  },
+		  play: function(){
+			  this.g.play(20);
+		  }
+		});
+		
+		
+		
+		var Timeline = Canvas.extend({
+			defaults : {
+			  ONE_DAY : 1000 * 60 * 60 * 24,
+			  round_error : 8
+			},
+		  works : {
+			  START_DATE : new Date(works[0].year, works[0].month, works[0].day),
+		    TOTAL_RANGE : 0,
+		    TOTAL_DAYS : 0,
+		    RATIO : 0
+		  },
+		  canvas : null ,
+		  init : function(canvas){
+		    this.canvas = canvas;
+		    
+		  },
+		  _getDateRange : function(start, end){          
+		    var dStart = (start == 'first') ? this.works.START_DATE : new Date(start.year, start.month, start.day).getTime();
+		    var dEnd = new Date(end.year, end.month, end.day).getTime();
+		    return (dEnd - dStart);
+		  },
+		  _getDaysFromMs : function(ms){
+		    return Math.round(ms/this.defaults.ONE_DAY);
+		  },
+		  _getRatio : function(days){
+		    return ($w.width()-20) / days;
+		  },
+		  _getWorkPosition : function(work){
+		    var range = this._getDateRange('first', work),
+		        days = this._getDaysFromMs(range);
+		        
+		    return days*this.works.RATIO;
+		  },
+			draw : function(){
+			  this.drawStyles(this.canvas);
+				this.drawWorks(this.canvas);
+			},
+		  drawWorks : function(){
+		    this.canvas.remove('miniwork');
+		    
+	    	for (var i=0; i < works.length; i++) {
+	    	  this.canvas.add('miniwork', {
+	    	    x : this._getWorkPosition(works[i])+this.defaults.round_error,
+	    	    s: 2,
+	    	    draw: function(ctx) {
+	    	      ctx.fillStyle = "#0ff";
+	    	      ctx.fillRect(this.x, $w.height()-50, this.s, this.s);
+	    	    }
+	    	  });
+	    	};
+	    	
+	    },
+			drawStyles : function(){
+				this.canvas.add('timeline', {
+					draw : function(ctx) {
+			          ctx.strokeStyle = '#FFF';
+			          ctx.beginPath();
+			          ctx.moveTo(0, $w.height()-100);
+			          ctx.lineTo($w.width(), $w.height()-100);
+			          ctx.stroke();
+			        }
+				})
+			},
+			update : function(){
+			  this.works.RATIO = this._getRatio(this.works.TOTAL_DAYS);
+			  this.drawWorks(this.canvas);
+			}
+		});
+		
+		
+		
+	  var Slider = Timeline.extend({
+	    defaults : {
+	      WIDTH: 120
+	    },
+	    active : false,
+	    mouse_init_x : 0,
+	    position: null,
+	    canvas : null,
+	    init : function(canvas){
+	      this.canvas = canvas;
+	      this.position = $w.width()-120;
+	      this.draw();
+	      this.startDrag();
+	    },
+	    draw : function(){
+        var _this = this;
+	      this.canvas.add('slider', {
+          draw: function(ctx) {
+            ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+            ctx.fillRect(_this.position,  $w.height()-65, _this.defaults.WIDTH, 30);
+          }
+        })
+        .add('slider_handler', {
+          draw : function(ctx) {
+            ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+            ctx.fillRect(0, ($w.height()-85), $w.width(), 70);
+          }
+        })
+        
+	    },
+	    startDrag : function(){
+	      var _this = this,
+	          unbindMouseMove = function(){
+              _this.canvas.unbind('slider_handler', 'mousemove');
+              _this.active = false;
+            };
+	      
+	      this.canvas
+	        .mousedown('slider', function(e) {
+              _this.active = true;
+              _this.mouse_init_x = e.clientX;
+              
+              _this.canvas.mousemove('slider_handler', function(e) {
+                  var diff = _this.mouse_init_x - e.clientX;
+          
+                  _this.position = _this.position - diff
+                  _this.mouse_init_x = e.clientX;
+              });
+          })
+          
+          .mouseup('slider', unbindMouseMove)
+          .mouseleave('slider', unbindMouseMove)
+          .mouseup('slider_handler',function(e){
+            unbindMouseMove();
+            _this.position = e.clientX;
+          })
+          .mouseleave('slider_handler', unbindMouseMove);
+        
+	    }
+	  });
+		
+		
+		var Work = Class.extend({
+		  canvas : null,
+		  init : function(canvas){
+		    this.canvas = canvas;
+		    this.works.TOTAL_RANGE = this._getDateRange('first', works[works.length-1]);
+		    this.works.TOTAL_DAYS = this._getDaysFromMs(this.works.TOTAL_RANGE);
+		    this.works.RATIO = this._getRatio(this.works.TOTAL_DAYS);
+		    
+			  this.draw(canvas);
+		  }
+		});
+		
+	
+		
+      
+      $(function() {
+        $w = $(window);
+
+		    var canvas = new Canvas('screen');
+		    var timeline = new Timeline(canvas.g);
+		    var slider = new Slider(canvas.g);
+		    
+		    canvas.play(20);
+		    
+		    $w.bind('resize', function(){
+		    	canvas.setSize();
+          timeline.update();
+          canvas.draw();
+		    })
+
+      });      
+    </script>
+  </body>
+</html>

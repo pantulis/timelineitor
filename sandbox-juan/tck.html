@@ -1,0 +1,76 @@
+<!--
+gury - A jQuery inspired canvas utility library
+Simple demo to show you how to use gury.
+By Ryan Sandor Richards
+-->
+<!DOCTYPE html>
+<html>
+<head>
+	<title>gury demo - By Ryan Sandor Richards</title>
+	<style type="text/css" media="screen">
+	* {
+		margin:0;
+		padding:0;
+	}
+	</style>
+</head>
+<body style="font-family: helvetica; background-color: #444; color: #ddd; text-align: center">
+
+
+
+	<canvas id="screen" width='1080' height='1000'></canvas>
+
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+		<script src="ocanvas-1.0.js" type="text/javascript" charset="utf-8"></script>
+
+		<script>
+
+
+		$(function() {
+			var canvas = oCanvas.create({
+				canvas: "#screen",
+				background: "#222",
+				fps: 60
+			});
+			var radius; 
+			var i;
+			for (i=0; i< 1000;){
+				radius = 25 + Math.ceil(Math.random()*40);
+				console.log("x =  " + i, "radius = " + radius);
+				var arc = canvas.display.arc({
+					x: i+radius,
+					y: 300,
+					radius: radius,
+					start: -180,
+					end: 0,
+					stroke: "3px #0f0",
+					fill: "radial-gradient(center, center, 50% width, #000, #090)"
+				});
+				canvas.addChild(arc);
+				var point = canvas.display.arc({
+					x: i,
+					y: 300,
+					radius: 4,
+					start: 0,
+					end: 359,
+					stroke: "2px #0f0",
+					fill: "rgb(0,96,0)"
+				})
+				canvas.addChild(point);
+				i = i  + radius * 2;
+			};
+			var point = canvas.display.arc({
+				x: i,
+				y: 300,
+				radius: 4,
+				start: 0,
+				end: 359,
+				stroke: "2px #0f0",
+				fill: "rgb(0,96,0)"
+			})
+			canvas.addChild(point);
+			
+		});      
+		</script>
+	</body>
+	</html>
